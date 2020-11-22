@@ -10,7 +10,7 @@ func mapUrls() {
 	// Ping Controller Routes
 	v1.GET("/ping", ping.Ping)
 	// Users Controller Routes
-	v1.GET("/users/:id", users.GetUser)
+	v1.GET("/users/:id", users.Show)
 	//v1.GET("/users/search", controllers.SearchUser)
-	v1.POST("/users", users.CreateUser)
+	v1.POST("/users", users.Create)
 }
