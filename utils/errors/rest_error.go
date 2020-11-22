@@ -26,3 +26,12 @@ func BadRequestError(e string) *RestError {
 		Error:   "bad_request",
 	}
 }
+
+// NotFoundError wraps not found error
+func NotFoundError(e string) *RestError {
+	return &RestError{
+		Message: e,
+		Status:  http.StatusNotFound,
+		Error:   "not_found",
+	}
+}
