@@ -1,6 +1,7 @@
 package users
 
 import (
+	"fmt"
 	"strconv"
 
 	"github.com/Direnzo30/go_microservices_users_api/domain/users"
@@ -37,6 +38,7 @@ func Show(c *gin.Context) {
 	if err != nil {
 
 	}
+	fmt.Printf("%+v\n", user)
 }
 
 // Search - search
