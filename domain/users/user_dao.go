@@ -3,7 +3,7 @@ package users
 import "github.com/Direnzo30/go_microservices_users_api/utils/errors"
 
 // Get performs a find by id for users
-func (u *User) Get(userID int64) *errors.RestError {
+func (u *User) Get() *errors.RestError {
 	return nil
 }
 
