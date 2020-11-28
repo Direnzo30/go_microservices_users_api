@@ -1,0 +1,12 @@
+BEGIN;
+
+CREATE TABLE users (
+    id BIGSERIAL PRIMARY KEY,
+    first_name VARCHAR(60) NOT NULL,
+    last_name VARCHAR(60) NOT NULL,
+    email VARCHAR NOT NULL UNIQUE,
+    username VARCHAR NOT NULL UNIQUE,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+COMMIT;
