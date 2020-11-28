@@ -2,7 +2,10 @@ package users
 
 import (
 	"fmt"
+	"net/http"
 	"strconv"
+
+	"github.com/Direnzo30/go_microservices_users_api/utils/renderer"
 
 	"github.com/Direnzo30/go_microservices_users_api/domain/users"
 	"github.com/Direnzo30/go_microservices_users_api/services"
@@ -24,6 +27,9 @@ func Create(c *gin.Context) {
 
 	}
 	// Render response should go here
+	if err = renderer.RenderSingleResponse(c, &user, nil, nil, http.StatusCreated); err != nil {
+
+	}
 }
 
 // Show - show
