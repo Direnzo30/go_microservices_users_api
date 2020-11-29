@@ -20,15 +20,15 @@ func Create(c *gin.Context) {
 	var err *errors.RestError
 	// Obtain body
 	if err = decoder.DecodeBodyFromJSON(c.Request, &user); err != nil {
-
+		panic(err)
 	}
 	// Create user and save it to database
 	if err = services.CreateUser(&user); err != nil {
-
+		panic(err)
 	}
 	// Render response should go here
 	if err = renderer.RenderSingleResponse(c, &user, nil, nil, http.StatusCreated); err != nil {
-
+		panic(err)
 	}
 }
 

@@ -10,9 +10,9 @@ import (
 // User struct handles the users entity
 type User struct {
 	ID        int64     `json:"id"`
-	FirstName string    `json:"first_name" validate:"required, max=60"`
-	LastName  string    `json:"last_name"  validate:"required, max=60"`
-	Email     string    `json:"email"      validate:"required, email"`
+	FirstName string    `json:"first_name" validate:"required,max=60"`
+	LastName  string    `json:"last_name"  validate:"required,max=60"`
+	Email     string    `json:"email"      validate:"required,email"`
 	Username  string    `json:"username"   validate:"required"`
 	CreatedAt time.Time `json:"created_at"`
 }
