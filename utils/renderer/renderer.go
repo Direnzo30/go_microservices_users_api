@@ -24,3 +24,10 @@ func RenderSingleResponse(c *gin.Context, object interface{}, metadata interface
 	c.JSON(status, response)
 	return nil
 }
+
+// RenderRestError handles error response in case of panic
+func RenderRestError(c *gin.Context, e *errors.RestError) {
+	response := make(map[string]interface{})
+	response["result"] = e
+	c.JSON(e.Status, response)
+}
