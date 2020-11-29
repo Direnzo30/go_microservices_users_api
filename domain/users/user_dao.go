@@ -1,16 +1,32 @@
 package users
 
 import (
+	"fmt"
+
 	"github.com/Direnzo30/go_microservices_users_api/datasources/psql"
 	"github.com/Direnzo30/go_microservices_users_api/utils/errors"
 )
 
 const (
-	insertQuery = "INSERT INTO users (first_name, last_name, email, username, created_at) VALUES ($1, $2, lower($3), $4, NOW()) RETURNING id, created_at;"
+	insertQuery   = "INSERT INTO users (first_name, last_name, email, username, created_at) VALUES ($1, $2, lower($3), $4, NOW()) RETURNING id, created_at;"
+	retrieveQuery = "SELECT first_name, last_name, email, username, created_at FROM users WHERE id = $1"
 )
 
 // Get performs a find by id for users
 func (u *User) Get() *errors.RestError {
+	var err error
+	// Prepare insertion statement
+	statement, err := psql.Connections.Users.Prepare(retrieveQuery)
+	if err != nil {
+		return errors.InternalServerError(err.Error())
+	}
+	// Make sure to close statement
+	defer statement.Close()
+	// Assign values
+	err = statement.QueryRow(u.ID).Scan(&u.FirstName, &u.LastName, &u.Email, &u.Username, &u.CreatedAt)
+	if err != nil {
+		return errors.NotFoundError(fmt.Sprintf("User with id: %d does not exist", u.ID))
+	}
 	return nil
 }
 

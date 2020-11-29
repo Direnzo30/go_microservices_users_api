@@ -1,7 +1,6 @@
 package users
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -26,7 +25,7 @@ func Create(c *gin.Context) {
 	if err = services.CreateUser(&user); err != nil {
 		panic(err)
 	}
-	// Render response should go here
+	// Render result
 	if err = renderer.RenderSingleResponse(c, &user, nil, nil, http.StatusCreated); err != nil {
 		panic(err)
 	}
@@ -38,13 +37,17 @@ func Show(c *gin.Context) {
 	var err *errors.RestError
 	userID, parseError := strconv.ParseInt(c.Param("id"), 10, 64)
 	if parseError != nil {
-		//err = errors.BadRequestError("id must be a number")
+		panic(errors.BadRequestError("id must be a number"))
 	}
+	// Try to retrieve error
 	user, err = services.GetUser(userID)
 	if err != nil {
-
+		panic(err)
 	}
-	fmt.Printf("%+v\n", user)
+	// Render result
+	if err = renderer.RenderSingleResponse(c, &user, nil, nil, http.StatusOK); err != nil {
+		panic(err)
+	}
 }
 
 // Search - search
