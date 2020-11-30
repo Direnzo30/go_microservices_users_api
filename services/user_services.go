@@ -26,3 +26,15 @@ func CreateUser(u *users.User) *errors.RestError {
 	}
 	return nil
 }
+
+// UpdateUser handles User update logic
+func UpdateUser(u *users.User) *errors.RestError {
+	var err *errors.RestError
+	if err = u.Validate(); err != nil {
+		return err
+	}
+	if err = u.Update(); err != nil {
+		return err
+	}
+	return nil
+}
