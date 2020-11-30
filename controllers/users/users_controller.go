@@ -35,13 +35,8 @@ func Create(c *gin.Context) {
 func Show(c *gin.Context) {
 	var user *users.User
 	var err *errors.RestError
-	// Validate presence of id
-	userID, parseError := strconv.ParseInt(c.Param("id"), 10, 64)
-	if parseError != nil {
-		panic(errors.BadRequestError("id must be a number"))
-	}
-	// Try to retrieve user
-	user, err = services.GetUser(userID)
+	// Initialize user
+	user, err = initalizeUser(c)
 	if err != nil {
 		panic(err)
 	}
@@ -55,13 +50,8 @@ func Show(c *gin.Context) {
 func Update(c *gin.Context) {
 	var user *users.User
 	var err *errors.RestError
-	// Validate presence of id
-	userID, parseError := strconv.ParseInt(c.Param("id"), 10, 64)
-	if parseError != nil {
-		panic(errors.BadRequestError("id must be a number"))
-	}
-	// Try to retrieve user
-	user, err = services.GetUser(userID)
+	// Initialize user
+	user, err = initalizeUser(c)
 	if err != nil {
 		panic(err)
 	}
@@ -80,7 +70,44 @@ func Update(c *gin.Context) {
 
 }
 
+// Delete - delete
+func Delete(c *gin.Context) {
+	var user *users.User
+	var err *errors.RestError
+	// Initialize user
+	user, err = initalizeUser(c)
+	if err != nil {
+		panic(err)
+	}
+	// Try to retrieve user
+	if err = services.DeleteUser(user); err != nil {
+		panic(err)
+	}
+	// Render result
+	response := map[string]bool{"deleted": true}
+	if err = renderer.RenderSingleResponse(c, response, nil, nil, http.StatusOK); err != nil {
+		panic(err)
+	}
+}
+
 // Search - search
 func Search(c *gin.Context) {
 
+}
+
+// Private Methods
+
+// initializes user for manipulation
+func initalizeUser(c *gin.Context) (*users.User, *errors.RestError) {
+	// Try to get id
+	userID, parseError := strconv.ParseInt(c.Param("id"), 10, 64)
+	if parseError != nil {
+		return nil, errors.BadRequestError("id must be a number")
+	}
+	// Try to retrieve user
+	user, err := services.GetUser(userID)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
 }

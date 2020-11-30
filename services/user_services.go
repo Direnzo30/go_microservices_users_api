@@ -38,3 +38,11 @@ func UpdateUser(u *users.User) *errors.RestError {
 	}
 	return nil
 }
+
+// DeleteUser handles User update logic
+func DeleteUser(u *users.User) *errors.RestError {
+	if err := u.Delete(); err != nil {
+		return err
+	}
+	return nil
+}
