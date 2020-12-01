@@ -12,6 +12,7 @@ const (
 	retrieveQuery = "SELECT first_name, last_name, email, username, created_at FROM users WHERE id = $1"
 	updateQuery   = "UPDATE users SET first_name = $1, last_name = $2, email = lower($3), username = $4 WHERE id = $5"
 	deleteQuery   = "DELETE FROM users WHERE id = $1"
+	uniqueQuery   = "SELECT 1 FROM users WHERE id <> $1 AND (LOWER(email) = LOWER($2) OR LOWER(username) = LOWER($3))"
 )
 
 // Get performs a find by id for users
@@ -84,4 +85,25 @@ func (u *User) Delete() *errors.RestError {
 		return errors.InternalServerError(err.Error())
 	}
 	return nil
+}
+
+// Private Methods
+
+func (u *User) checkUniqueness() *errors.RestError {
+	var err error
+	// Prepare delete statement
+	statement, err := psql.Connections.Users.Prepare(uniqueQuery)
+	if err != nil {
+		return errors.InternalServerError(err.Error())
+	}
+	// Make sure to close statement
+	defer statement.Close()
+	// Assign values
+	var dummy int64
+	err = statement.QueryRow(u.ID, u.Email, u.Username).Scan(&dummy)
+	// Scanned can not be done so the parameters are not taken
+	if err != nil {
+		return nil
+	}
+	return errors.BadRequestError(fmt.Sprintf("Username: %s or Email: %s has already been taken", u.Username, u.Email))
 }

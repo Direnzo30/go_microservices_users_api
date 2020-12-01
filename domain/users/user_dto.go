@@ -1,6 +1,7 @@
 package users
 
 import (
+	"strings"
 	"time"
 
 	"github.com/Direnzo30/go_microservices_users_api/utils/errors"
@@ -20,6 +21,15 @@ type User struct {
 // Validate control if the user istance is valid
 func (u *User) Validate() *errors.RestError {
 	if err := validators.ValidateStruct(u); err != nil {
+		return err
+	}
+	// Sanitize Structure
+	u.FirstName = strings.TrimSpace(u.FirstName)
+	u.LastName = strings.TrimSpace(u.LastName)
+	u.Email = strings.TrimSpace(u.Email)
+	u.Username = strings.TrimSpace(u.Username)
+	// Check uniqueness
+	if err := u.checkUniqueness(); err != nil {
 		return err
 	}
 	return nil
