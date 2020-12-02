@@ -8,11 +8,11 @@ import (
 )
 
 const (
-	insertQuery   = "INSERT INTO users (first_name, last_name, email, username, created_at) VALUES ($1, $2, lower($3), $4, NOW()) RETURNING id, created_at;"
+	insertQuery   = "INSERT INTO users (first_name, last_name, email, username, password, created_at, updated_at) VALUES ($1, $2, lower($3), $4, $5, NOW(), NOW()) RETURNING id, created_at, updated_at;"
 	retrieveQuery = "SELECT first_name, last_name, email, username, created_at FROM users WHERE id = $1"
-	updateQuery   = "UPDATE users SET first_name = $1, last_name = $2, email = lower($3), username = $4 WHERE id = $5"
+	updateQuery   = "UPDATE users SET first_name = $1, last_name = $2, email = lower($3), username = $4, updated_at = NOW() WHERE id = $5 RETURNING updated_at"
 	deleteQuery   = "DELETE FROM users WHERE id = $1"
-	uniqueQuery   = "SELECT 1 FROM users WHERE id <> $1 AND (LOWER(email) = LOWER($2) OR LOWER(username) = LOWER($3))"
+	uniqueQuery   = "SELECT 1 FROM users WHERE id <> $1 AND (LOWER(email) = LOWER($2) OR LOWER(username) = LOWER($3)) LIMIT 1"
 )
 
 // Get performs a find by id for users
@@ -44,7 +44,7 @@ func (u *User) Save() *errors.RestError {
 	// Make sure to close statement
 	defer statement.Close()
 	// Assign values
-	err = statement.QueryRow(u.FirstName, u.LastName, u.Email, u.Username).Scan(&u.ID, &u.CreatedAt)
+	err = statement.QueryRow(u.FirstName, u.LastName, u.Email, u.Username, u.Password).Scan(&u.ID, &u.CreatedAt, &u.UpdatedAt)
 	if err != nil {
 		return errors.InternalServerError(err.Error())
 	}
@@ -62,7 +62,7 @@ func (u *User) Update() *errors.RestError {
 	// Make sure to close statement
 	defer statement.Close()
 	// Assign values
-	_, err = statement.Exec(u.FirstName, u.LastName, u.Email, u.Username, u.ID)
+	err = statement.QueryRow(u.FirstName, u.LastName, u.Email, u.Username, u.ID).Scan(&u.UpdatedAt)
 	if err != nil {
 		return errors.InternalServerError(err.Error())
 	}

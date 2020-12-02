@@ -21,6 +21,9 @@ func CreateUser(u *users.User) *errors.RestError {
 	if err = u.Validate(); err != nil {
 		return err
 	}
+	if err = u.EncryptPassword(); err != nil {
+		return err
+	}
 	if err = u.Save(); err != nil {
 		return err
 	}

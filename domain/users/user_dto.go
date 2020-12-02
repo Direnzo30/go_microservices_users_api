@@ -1,6 +1,7 @@
 package users
 
 import (
+	"regexp"
 	"strings"
 	"time"
 
@@ -8,6 +9,13 @@ import (
 
 	"github.com/Direnzo30/go_microservices_users_api/utils/errors"
 	"github.com/Direnzo30/go_microservices_users_api/utils/validators"
+)
+
+const (
+	specialRegex = `[\!\@\#\$\_\.\-]{2}`
+	lowerRegex   = `[a-z]+`
+	upperRegex   = `[A-Z]+`
+	numberRegex  = `[0-9]+`
 )
 
 // User struct handles the users entity
@@ -32,6 +40,11 @@ func (u *User) Validate() *errors.RestError {
 	u.LastName = strings.TrimSpace(u.LastName)
 	u.Email = strings.TrimSpace(u.Email)
 	u.Username = strings.TrimSpace(u.Username)
+	u.Password = strings.TrimSpace(u.Password)
+	// Check password
+	if err := u.validatePassword(); err != nil {
+		return err
+	}
 	// Check uniqueness
 	if err := u.checkUniqueness(); err != nil {
 		return err
@@ -46,5 +59,24 @@ func (u *User) EncryptPassword() *errors.RestError {
 		return errors.InternalServerError("Unable to encrypt user's password")
 	}
 	u.Password = pass
+	return nil
+}
+
+func (u *User) validatePassword() *errors.RestError {
+	if len(u.Password) < 8 {
+		return errors.BadRequestError("password must have at least 8 characters")
+	}
+	if match, _ := regexp.MatchString(specialRegex, u.Password); !match {
+		return errors.BadRequestError("password must contain 2 of the following special characters: `!` `@` `#` `$` `_` `.` `-`")
+	}
+	if match, _ := regexp.MatchString(lowerRegex, u.Password); !match {
+		return errors.BadRequestError("password must at least one lowercase letter")
+	}
+	if match, _ := regexp.MatchString(upperRegex, u.Password); !match {
+		return errors.BadRequestError("password must at least one capital letter")
+	}
+	if match, _ := regexp.MatchString(numberRegex, u.Password); !match {
+		return errors.BadRequestError("password must at least one number")
+	}
 	return nil
 }
