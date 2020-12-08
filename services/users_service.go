@@ -5,8 +5,22 @@ import (
 	"github.com/Direnzo30/go_microservices_users_api/utils/errors"
 )
 
-// GetUser handles user retrieve login
-func GetUser(userID int64) (*users.User, *errors.RestError) {
+var (
+	//UsersService Handles the logic for the users service
+	UsersService usersServiceInterface = &usersService{}
+)
+
+type usersService struct{}
+
+type usersServiceInterface interface {
+	GetUserByID(int64) (*users.User, *errors.RestError)
+	CreateUser(*users.User) *errors.RestError
+	UpdateUser(*users.User) *errors.RestError
+	DeleteUser(*users.User) *errors.RestError
+}
+
+// GetUserByID handles user retrieve login
+func (us *usersService) GetUserByID(userID int64) (*users.User, *errors.RestError) {
 	var err *errors.RestError
 	var user = users.User{ID: userID}
 	if err = user.Get(); err != nil {
@@ -16,7 +30,7 @@ func GetUser(userID int64) (*users.User, *errors.RestError) {
 }
 
 // CreateUser Handles User creation logic
-func CreateUser(u *users.User) *errors.RestError {
+func (us *usersService) CreateUser(u *users.User) *errors.RestError {
 	var err *errors.RestError
 	if err = u.Validate(); err != nil {
 		return err
@@ -31,7 +45,7 @@ func CreateUser(u *users.User) *errors.RestError {
 }
 
 // UpdateUser handles User update logic
-func UpdateUser(u *users.User) *errors.RestError {
+func (us *usersService) UpdateUser(u *users.User) *errors.RestError {
 	var err *errors.RestError
 	if err = u.Validate(); err != nil {
 		return err
@@ -43,7 +57,7 @@ func UpdateUser(u *users.User) *errors.RestError {
 }
 
 // DeleteUser handles User update logic
-func DeleteUser(u *users.User) *errors.RestError {
+func (us *usersService) DeleteUser(u *users.User) *errors.RestError {
 	if err := u.Delete(); err != nil {
 		return err
 	}

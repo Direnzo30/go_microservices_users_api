@@ -22,7 +22,7 @@ func Create(c *gin.Context) {
 		panic(err)
 	}
 	// Create user and save it to database
-	if err = services.CreateUser(&user); err != nil {
+	if err = services.UsersService.CreateUser(&user); err != nil {
 		panic(err)
 	}
 	// Render result
@@ -60,7 +60,7 @@ func Update(c *gin.Context) {
 		panic(err)
 	}
 	// Try to update
-	if err = services.UpdateUser(user); err != nil {
+	if err = services.UsersService.UpdateUser(user); err != nil {
 		panic(err)
 	}
 	// Render result
@@ -80,7 +80,7 @@ func Delete(c *gin.Context) {
 		panic(err)
 	}
 	// Try to retrieve user
-	if err = services.DeleteUser(user); err != nil {
+	if err = services.UsersService.DeleteUser(user); err != nil {
 		panic(err)
 	}
 	// Render result
@@ -105,7 +105,7 @@ func initalizeUser(c *gin.Context) (*users.User, *errors.RestError) {
 		return nil, errors.BadRequestError("id must be a number")
 	}
 	// Try to retrieve user
-	user, err := services.GetUser(userID)
+	user, err := services.UsersService.GetUserByID(userID)
 	if err != nil {
 		return nil, err
 	}
